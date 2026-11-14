@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "Tip splitter API",
+    "description": "API checks for the tip-splitter app. Run it with Newman (see testing/README.md) or import it into Postman.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/health" },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('reports ok', function () {",
+              "    pm.expect(pm.response.json().status).to.equal('ok');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Split a bill",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/split?total=60&people=3&tip=10" },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('each person pays 22.00', function () {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.per_person).to.equal('22.00');",
+              "    pm.expect(body.total).to.equal('66.00');",
+              "    pm.expect(body.tip).to.equal('6.00');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bad input is rejected",
+      "request": { "method": "GET", "url": "{{baseUrl}}/api/split?total=abc&people=2" },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 400', function () {",
+              "    pm.response.to.have.status(400);",
+              "});",
+              "pm.test('says why', function () {",
+              "    pm.expect(pm.response.json().error).to.equal('total and tip must be numbers');",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "wre-testing",
+  "private": true,
+  "description": "Node tools for the testing examples: Newman runs the Postman collection.",
+  "scripts": {
+    "newman": "newman run postman/tipsplit.postman_collection.json"
+  },
+  "devDependencies": {
+    "newman": "6.2.3"
+  }
+}

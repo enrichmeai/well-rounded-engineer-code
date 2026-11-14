@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  java:
+    name: Java examples and patterns (JDK ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: ['21', '25']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+      - name: java/ tests
+        run: mvn -B test
+        working-directory: java
+      - name: patterns/ tests
+        run: mvn -B test
+        working-directory: patterns
+
+  python:
+    name: Python idioms (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.13']
+    defaults:
+      run:
+        working-directory: python
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -v
+
+  testing:
+    name: Testing (unit, API, browser, Newman)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: testing
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - run: python -m pip install -r requirements.txt
+      - name: Install the Chromium that Playwright drives
+        run: python -m playwright install --with-deps chromium
+      - name: Unit, API and browser tests
+        run: python -m pytest -v
+      - run: npm ci
+      - name: Postman collection with Newman
+        run: scripts/run-newman.sh
+
+  load-test:
+    name: Load test (k6)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: testing
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: grafana/setup-k6-action@v1
+        with:
+          k6-version: '2.4.0'
+      - name: Start the app and run k6 against it
+        run: |
+          python -m tipsplit.server --port 8000 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID"' EXIT
+          for _ in $(seq 1 50); do
+            python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=1)" 2>/dev/null && break
+            sleep 0.2
+          done
+          k6 run -e BASE_URL=http://127.0.0.1:8000 k6/load-test.js
