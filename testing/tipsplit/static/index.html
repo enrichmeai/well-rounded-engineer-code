@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tip splitter</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 28rem; margin: 2rem auto; padding: 0 1rem; }
+    label { display: block; margin-top: 1rem; }
+    input { width: 100%; padding: 0.4rem; font-size: 1rem; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; font-size: 1rem; }
+    #result { margin-top: 1.5rem; font-size: 1.2rem; }
+    .error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Tip splitter</h1>
+  <form id="split-form">
+    <label for="total">Bill total</label>
+    <input id="total" name="total" inputmode="decimal" required>
+    <label for="people">Number of people</label>
+    <input id="people" name="people" inputmode="numeric" value="2" required>
+    <label for="tip">Tip (%)</label>
+    <input id="tip" name="tip" inputmode="decimal" value="10">
+    <button type="submit">Split the bill</button>
+  </form>
+  <p id="result" role="status"></p>
+  <script>
+    document.getElementById("split-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const query = new URLSearchParams(new FormData(event.target));
+      const response = await fetch("/api/split?" + query);
+      const body = await response.json();
+      const result = document.getElementById("result");
+      if (response.ok) {
+        result.className = "";
+        result.textContent = `Each person pays ${body.per_person} (total ${body.total}, tip ${body.tip})`;
+      } else {
+        result.className = "error";
+        result.textContent = body.error;
+      }
+    });
+  </script>
+</body>
+</html>

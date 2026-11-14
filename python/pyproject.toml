@@ -1,0 +1,9 @@
+[project]
+name = "wre-python-idioms"
+version = "1.0.0"
+description = "Python idioms with pytest, for the Well Rounded Engineer guide"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
