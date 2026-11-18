@@ -1,0 +1,11 @@
+// The schema every example in this folder uses. Read this first.
+// A .proto file is the contract: names are for people; the NUMBERS are what goes on the wire.
+syntax = "proto3";
+
+package example;
+
+message Person {
+  string name  = 1;   // field number 1
+  int32  id    = 2;   // field number 2
+  string email = 3;   // field number 3
+}
