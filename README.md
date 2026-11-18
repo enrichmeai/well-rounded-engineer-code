@@ -13,6 +13,7 @@ links to a folder here, and every folder can be run on a laptop, with no cloud a
 | [`java/`](java/) | Java, release by release | [guide](https://enrichmeai.com/well-rounded-engineer/java/) |
 | [`python/`](python/) | Python idioms | [guide](https://enrichmeai.com/well-rounded-engineer/python/) |
 | [`patterns/`](patterns/) | Design patterns (Gang of Four) | [guide](https://enrichmeai.com/well-rounded-engineer/history/) |
+| [`protobuf/`](protobuf/) | Protocol Buffers: the wire format by hand, and safe schema changes | [guide](https://enrichmeai.com/well-rounded-engineer/apihistory/) |
 | [`testing/`](testing/) | Testing: unit, browser, API and load | [guide](https://enrichmeai.com/well-rounded-engineer/testing/) |
 | [`refactoring/`](refactoring/) | Refactoring | [guide](https://enrichmeai.com/well-rounded-engineer/testing/) |
 
