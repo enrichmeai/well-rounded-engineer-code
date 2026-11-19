@@ -41,6 +41,18 @@ mvn test -Dtest=SealedShapesTest
 | Java 21 | Virtual threads | [`VirtualThreads`](src/main/java/com/enrichmeai/wre/javatour/VirtualThreads.java) | [`VirtualThreadsTest`](src/test/java/com/enrichmeai/wre/javatour/VirtualThreadsTest.java) |
 | Java 21 | Sequenced collections (`getFirst`, `getLast`, `reversed`) | [`SequencedCollections`](src/main/java/com/enrichmeai/wre/javatour/SequencedCollections.java) | [`SequencedCollectionsTest`](src/test/java/com/enrichmeai/wre/javatour/SequencedCollectionsTest.java) |
 
+The same table as a path through the releases. Each box is a release; read it top to bottom to see how everyday Java changed.
+
+```mermaid
+flowchart TD
+    J8["Java 8: lambdas, streams, Optional"] --> J10["Java 10: var"]
+    J10 --> J14["Java 14: switch expressions"]
+    J14 --> J15["Java 15: text blocks"]
+    J15 --> J16["Java 16: records, instanceof patterns"]
+    J16 --> J17["Java 17: sealed classes"]
+    J17 --> J21["Java 21: switch patterns, record patterns, virtual threads, sequenced collections"]
+```
+
 A few smaller APIs appear along the way: `String.strip()` (Java 11), `String.formatted()` (Java 15) and
 `Thread.sleep(Duration)` (Java 19).
 
@@ -67,6 +79,32 @@ on 25, and CI tests it on both 21 and 25.
 Features from Java 22 to 25 are not here yet: unnamed variables `_` (22), primitive types in patterns (23, still a
 preview), flexible constructor bodies and module import declarations (25). They will come in their own folder once
 they can be run and tested, rather than described.
+
+Why try-this 1 works. `sealed ... permits` tells the compiler the full list of shapes, so a `switch` over a `Shape` can be checked for a missing case. Add a fourth shape and every `switch` that does not handle it stops compiling.
+
+```mermaid
+classDiagram
+    direction TB
+    class Shape {
+        <<sealed interface>>
+    }
+    class Circle {
+        <<record>>
+        double radius
+    }
+    class Square {
+        <<record>>
+        double side
+    }
+    class Rectangle {
+        <<record>>
+        double width
+        double height
+    }
+    Shape <|.. Circle
+    Shape <|.. Square
+    Shape <|.. Rectangle
+```
 
 ## Try this
 

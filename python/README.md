@@ -39,6 +39,26 @@ The "Since" column was checked against the "What's New" pages in CPython's own s
 `3.6.rst` (PEP 498), `3.7.rst` (PEP 557), `3.8.rst` (f-strings support `=`), `3.9.rst` (PEP 585) and `3.10.rst`
 (PEP 634, PEP 604, the `slots` parameter of `@dataclass`).
 
+What `with` does, step by step, using `temporary_setting` from `idioms/context_managers.py`. The `finally` puts the old value back whether the block finishes or raises, which is the whole point of `with`.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Y as Your with block
+    participant M as temporary_setting
+    Y->>M: enter: with temporary_setting(settings, "debug", True)
+    M->>M: remember the old value, set debug = True
+    M-->>Y: yield settings
+    Y->>Y: run the block
+    alt the block finishes
+        Y->>M: exit
+    else the block raises an exception
+        Y->>M: exit, with the exception
+    end
+    M->>M: finally: put the old value back
+    Note over Y,M: an exception keeps going up after the clean-up
+```
+
 ## Try this
 
 1. In `idioms/data_classes.py`, change `field(default_factory=list)` to `= []`. What does Python say, and why is
