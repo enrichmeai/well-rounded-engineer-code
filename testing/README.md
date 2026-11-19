@@ -37,6 +37,16 @@ Notice the shape: many unit tests, fewer API tests, only three browser tests. Ea
 fragile, but closer to what a person does. [`tests/conftest.py`](tests/conftest.py) starts the app on a free port
 for the API and browser tests, so you do not have to.
 
+What each kind of test actually touches. Each one goes through more of the app than the one before it, which is why it catches more and runs slower.
+
+```mermaid
+flowchart TD
+    U["unit tests"] --> L["logic.py: the rule"]
+    API["API tests and Newman"] -- HTTP --> S["server.py"] --> L
+    BR["browser tests"] --> CH["Chromium"] --> P["index.html form"] -- fetch --> S
+    K6["k6: 10 users at once"] -- HTTP --> S
+```
+
 ## Run it
 
 You need Python 3.10 or newer. For Newman you also need Node.js 16 or newer.
